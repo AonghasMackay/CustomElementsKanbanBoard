@@ -25,8 +25,6 @@ document.addEventListener("DOMContentLoaded", function(event) {
  * https://html.spec.whatwg.org/multipage/dom.html#elements-in-the-dom
  * 
  * @extends HTMLElement
- * 
- * @todo add a new card button functionality
  */
 class KanbanColumn extends HTMLElement {
     constructor(columnName = 'To Do') {
