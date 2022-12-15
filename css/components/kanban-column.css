@@ -41,7 +41,8 @@ h2 > input {
 
 .kanban-card-container {
     margin: 15px 0;
-    background-color: #414a51;
+    background-color: #1c242b;
+    filter: brightness(95%);
     flex-grow: 1;
     overflow-y: auto;
 }

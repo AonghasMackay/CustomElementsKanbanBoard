@@ -44,6 +44,22 @@
         </button>
     </template>
 
+    <template id="kanban-card-popup-template">
+        <link rel="stylesheet" href="css/components/kanban-card-popup.css">
+        <dialog class="kanban-card-popup">
+            <div class="kanban-card-popup-header">
+                <h2><input name="kanban-card-title"></input></h2>
+                <button class="kanban-card-popup-close-button">x</button>
+            </div>
+            <div class="kanban-card-popup-body">
+                <textarea name="kanban-card-description"></textarea>
+            </div>
+            <div class="kanban-card-popup-footer">
+                <button class="kanban-card-popup-save-button">Save</button>
+            </div>
+        </dialog>
+    </template>
+
     <template id="kanban-card-template">
         <div>
             <h3>Kanban Card</h3>

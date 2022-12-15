@@ -15,7 +15,8 @@
 document.addEventListener("DOMContentLoaded", function(event) {
     customElements.define('kanban-column', KanbanColumn);
     customElements.define('kanban-card', KanbanCard, { extends: 'div' });
-    customElements.define('add-kanban-column', addKanbanColumn);
+    customElements.define('add-kanban-column', AddKanbanColumn);
+    customElements.define('kanban-card-popup', KanbanCardPopup, { extends: 'dialog' });
 
     new KanbanBoard();
 });
@@ -92,7 +93,7 @@ class KanbanColumn extends HTMLElement {
 }
 
 
-class addKanbanColumn extends HTMLElement {
+class AddKanbanColumn extends HTMLElement {
     constructor() {
         //Calls the parent class's constructor and binds the parent class's public fields, 
         //after which the derived class's constructor can further access and modify 'this'.
@@ -123,6 +124,26 @@ class addKanbanColumn extends HTMLElement {
     }
 }
 
+
+/**
+ * @extends HTMLDialogElement
+ */
+class KanbanCardPopup extends HTMLDialogElement {
+    constructor() {
+        //Calls the parent class's constructor and binds the parent class's public fields, 
+        //after which the derived class's constructor can further access and modify 'this'.
+        //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super
+        super();
+        
+        //get the template from the dom and clone it
+        const kanbanCardPopupTemplate = document.getElementById('kanban-card-popup-template');
+        const kanbanCardPopupClone = kanbanCardPopupTemplate.content.cloneNode(true);
+
+        //create a shadow DOM root and append the cloned template to it
+        const shadowRoot = this.attachShadow({ mode: 'open' });
+        shadowRoot.appendChild(kanbanCardPopupClone);
+    }
+}
 
 /**
  * @extends HTMLDivElement
@@ -159,7 +180,8 @@ class KanbanBoard {
             self.addKanbanColumn(columnName);
         });
 
-        this.main.appendChild(new addKanbanColumn());
+        //add the add column button to the DOM after the last column
+        this.main.appendChild(new AddKanbanColumn());
     }
 
     /**
