@@ -2,17 +2,39 @@
 <html>
     <head>
         <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Custom Elements Kanban Board</title>
+
+        <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
         <header>
 
         </header>
         <main>
-
+            <kanban-column></kanban-column>
         </main>
         <footer>
 
         </footer>
     </body>
+
+    <template id="kanban-column-template">
+        <section class="kanban-column">
+            <h2><slot name="kanban-column-title">Heading</slot></h2>
+            <div>
+            </div>
+            <div>
+                <button class="add-kanban-card-button">+ Add Card</button>
+            </div>
+        </section>
+    </template>
+
+    <template id="kanban-card-template">
+        <div>
+
+        </div>
+    </template>
+
+    <script src="js/main.js"></script>
 </html>
