@@ -8,7 +8,7 @@
         <link rel="stylesheet" href="css/main.css">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     </head>
     <body>
         <header>
@@ -26,7 +26,7 @@
         <link rel="stylesheet" href="css/components/kanban-column.css">
         <section class="kanban-column">
             <div class="kanban-column-header">
-                <h2><slot name="kanban-column-title">Heading</slot></h2>
+                <h2><input name="kanban-column-title"></input></h2>
                 <button class="kanban-column-delete-button">x</button>
             </div>
             <div class="kanban-card-container">
@@ -37,9 +37,17 @@
         </section>
     </template>
 
+    <template id="add-kanban-column-template">
+        <link rel="stylesheet" href="css/components/add-kanban-column.css">
+        <button class="add-kanban-column-button" role="button">
+            <p>Add Column</p>
+        </button>
+    </template>
+
     <template id="kanban-card-template">
         <div>
-
+            <h3>Kanban Card</h3>
+            <p>lorem ipsum</p>
         </div>
     </template>
 

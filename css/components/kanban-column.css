@@ -6,7 +6,7 @@
     margin: 0;
     width: 300px;
     border-radius: 5px;
-    min-height: calc(100vh - 60px);
+    min-height: calc(100vh - 75px);
     display: flex;
     flex-direction: column;
 }
@@ -28,10 +28,22 @@ h2 {
     color: var(--component-text-colour);
 }
 
+h2 > input {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    color: var(--component-text-colour);
+    font-size: 21px;
+    padding: 0;
+    margin: 0;
+    font-weight: 600;
+}
+
 .kanban-card-container {
     margin: 15px 0;
     background-color: #414a51;
     flex-grow: 1;
+    overflow-y: auto;
 }
 
 button {

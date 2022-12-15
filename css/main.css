@@ -5,6 +5,7 @@
 html {
     background-color: var(--main-background-color);
     min-height: 100%;
+    overflow-y: hidden;
 }
 
 body {
@@ -21,6 +22,11 @@ main {
 }
 
 kanban-column {
+    min-height: calc(100vh - 30px);
+    margin: 15px;
+}
+
+add-kanban-column {
     min-height: calc(100vh - 30px);
     margin: 15px;
 }
