@@ -30,3 +30,13 @@ add-kanban-column {
     min-height: calc(100vh - 30px);
     margin: 15px;
 }
+
+kanban-card-popup {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    background-color: rgb(44 52 60 / 45%);
+}

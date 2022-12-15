@@ -1,0 +1,85 @@
+dialog {
+    --main-background-color: #0c141c;
+    --component-text-colour: #f5f5f5;
+    height: 500px;
+    width: 500px;
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: auto; 
+    margin-right: auto; 
+    left: 0; 
+    right: 0; 
+    background-color: var(--main-background-color);
+    border-radius: 5px;
+    border: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+
+dialog * {
+    font-family: 'Open Sans', sans-serif;
+    color: var(--component-text-colour);
+}
+
+h2 {
+    margin: 0;
+    padding: 0;
+    color: var(--component-text-colour);
+}
+
+h2 > input {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    color: var(--component-text-colour);
+    font-size: 21px;
+    padding: 0;
+    margin: 0;
+    font-weight: 600;
+}
+
+.kanban-card-popup-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 0;
+}
+
+button {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    color: var(--component-text-colour);
+    font-size: 20px;
+}
+
+button:hover {
+    cursor: pointer;
+    filter: brightness(85%);
+}
+
+.kanban-card-popup-body {
+    flex-grow: 1;
+}
+
+textarea {
+    border: 1px solid var(--component-text-colour);
+    background-color: var(--main-background-color);
+    border-radius: 5px;
+    outline: 0;
+    background-color: transparent;
+    color: var(--component-text-colour);
+    font-size: 16px;
+    padding: 15px;
+    margin: 0;
+    font-weight: 600;
+    width: calc(100% - 30px);
+    height: 150px;
+}
+
+.kanban-card-popup-footer {
+    justify-self: flex-end;
+}

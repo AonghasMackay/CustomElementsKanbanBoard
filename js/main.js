@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     customElements.define('kanban-column', KanbanColumn);
     customElements.define('kanban-card', KanbanCard, { extends: 'div' });
     customElements.define('add-kanban-column', AddKanbanColumn);
-    customElements.define('kanban-card-popup', KanbanCardPopup, { extends: 'dialog' });
+    customElements.define('kanban-card-popup', KanbanCardPopup);
 
     new KanbanBoard();
 });
@@ -74,8 +74,9 @@ class KanbanColumn extends HTMLElement {
 
         const addKanbanCardButton = shadowRoot.querySelector('.add-kanban-card-button');
         addKanbanCardButton.addEventListener('click', function(event) {
-            const kanbanCardContainer = shadowRoot.querySelector('.kanban-card-container');
-            kanbanCardContainer.appendChild(new KanbanCard());
+            //const kanbanCardContainer = shadowRoot.querySelector('.kanban-card-container');
+            //kanbanCardContainer.appendChild(new KanbanCard());
+            document.querySelector('body').appendChild(new KanbanCardPopup());
         });
 
         const columnNameInput = shadowRoot.querySelector('[name="kanban-column-title"]');
@@ -126,14 +127,16 @@ class AddKanbanColumn extends HTMLElement {
 
 
 /**
- * @extends HTMLDialogElement
+ * @extends HTMLElement
  */
-class KanbanCardPopup extends HTMLDialogElement {
-    constructor() {
+class KanbanCardPopup extends HTMLElement {
+    constructor(name = 'New Card', description = 'New Card Description') {
         //Calls the parent class's constructor and binds the parent class's public fields, 
         //after which the derived class's constructor can further access and modify 'this'.
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super
         super();
+        this.name = name;
+        this.description = description;
         
         //get the template from the dom and clone it
         const kanbanCardPopupTemplate = document.getElementById('kanban-card-popup-template');
@@ -142,6 +145,28 @@ class KanbanCardPopup extends HTMLDialogElement {
         //create a shadow DOM root and append the cloned template to it
         const shadowRoot = this.attachShadow({ mode: 'open' });
         shadowRoot.appendChild(kanbanCardPopupClone);
+
+        shadowRoot.querySelector('dialog').show();
+
+        this.fillForm(shadowRoot);
+
+        this.addEventListeners(shadowRoot);
+    }
+
+    fillForm(shadowRoot) {
+        shadowRoot.querySelector('[name="kanban-card-title"]').value = this.name;
+        shadowRoot.querySelector('[name="kanban-card-description"]').value = this.description;
+    }
+
+    addEventListeners(shadowRoot) {
+        const self = this;
+        shadowRoot.querySelector('.kanban-card-popup-close-button').addEventListener('click', function(event) {
+            self.closeCardPopup();
+        });
+    }
+
+    closeCardPopup() {
+        this.remove();
     }
 }
 
