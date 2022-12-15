@@ -1,16 +1,14 @@
 /**
  * Kanban Board built with Web Components Custom Elements API
- * @version 0.0.1
+ * @version 0.1.0
  * @author Aonghas MacKay
  * @license GPL-3.0
  * 
- * @todo style columns and cards - must be done from within shadow DOM
- * @todo allow new columns and cards to be added to the board
+ * @todo style cards
+ * @todo allow new cards to be added to the board
  * @todo allow cards to be drag and dropped between columns
  * @todo allow cards to be edited
  * @todo allow cards to be deleted
- * @todo allow columns to be deleted
- * @todo allow column names to be edited
  */
 
 //when dom has loaded...
