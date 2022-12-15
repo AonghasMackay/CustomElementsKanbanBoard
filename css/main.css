@@ -4,4 +4,23 @@
 
 html {
     background-color: var(--main-background-color);
+    min-height: 100%;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+}
+
+main {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    min-height: 100%;
+}
+
+kanban-column {
+    min-height: calc(100vh - 30px);
+    margin: 15px;
 }

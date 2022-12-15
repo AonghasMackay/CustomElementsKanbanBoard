@@ -6,13 +6,16 @@
         <title>Custom Elements Kanban Board</title>
 
         <link rel="stylesheet" href="css/main.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     </head>
     <body>
         <header>
 
         </header>
         <main>
-            <kanban-column></kanban-column>
+            <!-- Kanban columns inserted here -->
         </main>
         <footer>
 
@@ -20,9 +23,13 @@
     </body>
 
     <template id="kanban-column-template">
+        <link rel="stylesheet" href="css/components/kanban-column.css">
         <section class="kanban-column">
-            <h2><slot name="kanban-column-title">Heading</slot></h2>
-            <div>
+            <div class="kanban-column-header">
+                <h2><slot name="kanban-column-title">Heading</slot></h2>
+                <button class="kanban-column-delete-button">x</button>
+            </div>
+            <div class="kanban-card-container">
             </div>
             <div>
                 <button class="add-kanban-card-button">+ Add Card</button>
