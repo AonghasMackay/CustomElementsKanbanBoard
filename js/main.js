@@ -298,7 +298,7 @@ class KanbanCard extends HTMLElement {
 
         this.fillCard(shadowRoot);
 
-        this.addEditCardEventListener(shadowRoot);
+        this.addEditCardEventListeners(shadowRoot);
     }
 
     updateCardContents(name, description, priority) {
@@ -325,7 +325,7 @@ class KanbanCard extends HTMLElement {
      * 
      * @param {ShadowRoot} shadowRoot 
      */
-    addEditCardEventListener(shadowRoot) {
+    addEditCardEventListeners(shadowRoot) {
         const self = this;
         shadowRoot.querySelector('.card-delete-button').addEventListener('click', function(event) {
             self.remove();
@@ -352,6 +352,7 @@ class KanbanCard extends HTMLElement {
 
 /**
  * Accepts an array of column names and creates a KanbanColumn for each within the main element
+ * Contains static methods relating to the whole board
  * 
  * @param {Array} kanbanColumns
  */
@@ -392,6 +393,7 @@ class KanbanBoard {
     /**
      * Generates a unique card ID
      * 
+     * @static
      * @returns {String} a unique card ID
      */
     static generateCardID() {
