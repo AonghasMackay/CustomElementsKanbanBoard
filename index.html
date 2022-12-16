@@ -62,9 +62,15 @@
 
     <template id="kanban-card-template">
         <link rel="stylesheet" href="css/components/kanban-card.css">
-        <div>
-            <h3 class="card-title"></h3>
-            <p class="card-description"></p>
+        <div class="kanban-card">
+            <span class="priority-bar"></span>
+            <div class="card-content">
+                <div class="card-header">
+                    <h3 class="card-title"></h3>
+                    <button class="card-delete-button">x</button>
+                </div>
+                <p class="card-description"></p>
+            </div>
         </div>
     </template>
 

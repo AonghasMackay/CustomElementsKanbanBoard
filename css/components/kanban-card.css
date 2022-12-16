@@ -1,0 +1,57 @@
+.kanban-card {
+    --component-background-colour: #232c32;
+    --component-text-colour: #f5f5f5;
+    background-color: var(--component-background-colour);
+    margin: 15px;
+    border-radius: 5px;
+    width: calc(100% - 30px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.priority-bar {
+    width: 100%;
+    height: 5px;
+    background-color: black;
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.card-content {
+    margin: 15px;
+}
+
+.card-header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+button {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    color: var(--component-text-colour);
+    font-size: 15px;
+}
+
+button:hover {
+    cursor: pointer;
+    filter: brightness(85%);
+}
+
+h3,
+p {
+    color: var(--component-text-colour);
+    margin-top: 0;
+}
+
+p {
+    font-size: 15px;
+}
+

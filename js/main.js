@@ -1,11 +1,9 @@
 /**
  * Kanban Board built with Web Components Custom Elements API
- * @version 0.1.0
+ * @version 0.2.0
  * @author Aonghas MacKay
  * @license GPL-3.0
  * 
- * @todo style cards
- * @todo allow new cards to be added to the board
  * @todo allow cards to be drag and dropped between columns
  * @todo allow cards to be edited
  * @todo allow cards to be deleted
@@ -14,7 +12,7 @@
 //when dom has loaded...
 document.addEventListener("DOMContentLoaded", function(event) {
     customElements.define('kanban-column', KanbanColumn);
-    customElements.define('kanban-card', KanbanCard, { extends: 'div' });
+    customElements.define('kanban-card', KanbanCard);
     customElements.define('add-kanban-column', AddKanbanColumn);
     customElements.define('kanban-card-popup', KanbanCardPopup);
 
@@ -225,10 +223,7 @@ class KanbanCardPopup extends HTMLElement {
     }
 }
 
-/**
- * @extends HTMLDivElement
- */
-class KanbanCard extends HTMLDivElement {
+class KanbanCard extends HTMLElement {
     constructor(name, description) {
         //Calls the parent class's constructor and binds the parent class's public fields, 
         //after which the derived class's constructor can further access and modify 'this'.
