@@ -7,6 +7,7 @@
  * @todo allow cards to be drag and dropped between columns
  * @todo allow cards to be edited
  * @todo allow cards to be deleted
+ * @todo reduce css repetition
  */
 
 //when dom has loaded...
@@ -149,7 +150,7 @@ class AddKanbanColumn extends HTMLElement {
  * @extends HTMLElement
  */
 class KanbanCardPopup extends HTMLElement {
-    constructor(id, name = 'New Card', description = 'New Card Description') {
+    constructor(id, name = 'New Card', description = 'New Card Description', priority = 'low', cardID = null) {
         //Calls the parent class's constructor and binds the parent class's public fields, 
         //after which the derived class's constructor can further access and modify 'this'.
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super
@@ -157,6 +158,8 @@ class KanbanCardPopup extends HTMLElement {
         this.name = name;
         this.description = description;
         this.columnId = id;
+        this.priority = priority;
+        this.cardID = cardID;
         
         //get the template from the dom and clone it
         const kanbanCardPopupTemplate = document.getElementById('kanban-card-popup-template');
@@ -184,6 +187,7 @@ class KanbanCardPopup extends HTMLElement {
     fillForm(shadowRoot) {
         shadowRoot.querySelector('[name="kanban-card-title"]').value = this.name;
         shadowRoot.querySelector('[name="kanban-card-description"]').value = this.description;
+        shadowRoot.querySelector('[name="kanban-card-priority"]').value = this.priority;
     }
 
     /**
@@ -206,13 +210,30 @@ class KanbanCardPopup extends HTMLElement {
      * Saves the card to the DOM
      */
     saveCard() {
+        //get the values from the form
+        this.name = this.shadowRoot.querySelector('[name="kanban-card-title"]').value;
+        this.description = this.shadowRoot.querySelector('[name="kanban-card-description"]').value;
+        this.priority = this.shadowRoot.querySelector('[name="kanban-card-priority"]').value;
+
+        if(this.cardID == null) {
+            this.cardID = KanbanBoard.generateCardID();
+            this.createCard();
+        } else {
+            console.log('update card');
+        }
+
+        this.closeCardPopup();
+    }
+
+    /**
+     * Creates a new kanban card in the DOM
+     */
+    createCard() {
         //get column card container by id
         const column = document.querySelector(`#${this.columnId}`);
         const shadowRoot = column.shadowRoot;
         const kanbanCardContainer = shadowRoot.querySelector('.kanban-card-container');
-        kanbanCardContainer.appendChild(new KanbanCard(this.name, this.description));
-
-        this.closeCardPopup();
+        kanbanCardContainer.appendChild(new KanbanCard(this.name, this.description, this.priority, this.cardID));
     }
 
     /**
@@ -224,13 +245,19 @@ class KanbanCardPopup extends HTMLElement {
 }
 
 class KanbanCard extends HTMLElement {
-    constructor(name, description) {
+    constructor(name, description, priority, cardID) {
         //Calls the parent class's constructor and binds the parent class's public fields, 
         //after which the derived class's constructor can further access and modify 'this'.
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super
         super();
+
         this.name = name;
         this.description = description;
+        this.priority = priority;
+        this.cardID = cardID;
+        
+        //set element id
+        this.id = cardID;
 
         //get the template from the dom and clone it
         const kanbanCardTemplate = document.getElementById('kanban-card-template');
@@ -241,11 +268,39 @@ class KanbanCard extends HTMLElement {
         shadowRoot.appendChild(kanbanCardClone);
 
         this.fillCard(shadowRoot);
+
+        this.addEditCardEventListener(shadowRoot);
     }
 
+    /**
+     * Fills the card with the provided values
+     * 
+     * @param {ShadowRoot} shadowRoot 
+     */
     fillCard(shadowRoot) {
         shadowRoot.querySelector('.card-title').innerHTML = this.name;
         shadowRoot.querySelector('.card-description').innerHTML = this.description;
+        shadowRoot.querySelector('.priority-bar').classList.add(`priority-${this.priority}`);
+    }
+
+    /**
+     * Adds event listeners to the elements in the shadow DOM
+     * 
+     * @param {ShadowRoot} shadowRoot 
+     */
+    addEditCardEventListener(shadowRoot) {
+        const self = this;
+        shadowRoot.querySelector('.card-delete-button').addEventListener('click', function(event) {
+            self.remove();
+        })
+
+        shadowRoot.querySelector('.card-description').addEventListener('click', function(event) {
+            document.querySelector('body').appendChild(new KanbanCardPopup(null, this.name, this.description, this.priority, this.cardID));
+        });
+
+        shadowRoot.querySelector('.card-title').addEventListener('click', function(event) {
+            document.querySelector('body').appendChild(new KanbanCardPopup(null, this.name, this.description, this.priority, this.cardID));
+        });
     }
 }
 
@@ -286,5 +341,21 @@ class KanbanBoard {
     static addNewKanbanColumn(columnName) {
         const addNewColumnButton = document.querySelector('add-kanban-column');
         document.querySelector('main').insertBefore(new KanbanColumn(columnName), addNewColumnButton);
+    }
+
+    /**
+     * Generates a unique card ID
+     * 
+     * @returns {String} a unique card ID
+     */
+    static generateCardID() {
+        let cardLength = 0;
+
+        //foreach column, get the number of cards in the column and add it to the cardLength
+        document.querySelectorAll('kanban-column').forEach(function(column) {
+            cardLength += column.shadowRoot.querySelectorAll('kanban-card').length;
+        });
+
+        return `card-${cardLength + 1}`;
     }
 }

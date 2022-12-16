@@ -80,6 +80,28 @@ textarea {
     height: 150px;
 }
 
+select {
+    border: 0;
+    outline: 0;
+    background-color: transparent;
+    color: var(--component-text-colour);
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-top: 15px;
+}
+
+option {
+    background-color: var(--main-background-color);
+    color: var(--component-text-colour);
+    font-size: 16px;
+    padding: 5px 10px;
+    margin-top: 15px;
+}
+
+label {
+    margin-right: 10px;
+}
+
 .kanban-card-popup-footer {
     justify-self: flex-end;
 }

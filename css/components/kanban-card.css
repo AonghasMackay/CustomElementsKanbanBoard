@@ -21,8 +21,26 @@
     left: 0;
 }
 
+.priority-bar.priority-low {
+    background-color: #00ff00;
+}
+
+.priority-bar.priority-medium {
+    background-color: #ffff00;
+}
+
+.priority-bar.priority-high {
+    background-color: #ff0000;
+}
+
 .card-content {
     margin: 15px;
+}
+
+.card-title:hover,
+.card-description:hover {
+    cursor: pointer;
+    filter: brightness(85%);
 }
 
 .card-header {
