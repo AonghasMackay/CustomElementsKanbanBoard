@@ -6,6 +6,8 @@
  * 
  * @todo allow cards to be drag and dropped between columns
  * @todo reduce css repetition
+ * @todo make responsive
+ * @todo check overfloww works
  */
 
 //when dom has loaded...
