@@ -5,8 +5,6 @@
  * @license GPL-3.0
  * 
  * @todo allow cards to be drag and dropped between columns
- * @todo allow cards to be edited
- * @todo allow cards to be deleted
  * @todo reduce css repetition
  */
 
@@ -24,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
  * Extends the HTMLElement as the section element has no specific class
  * https://html.spec.whatwg.org/multipage/dom.html#elements-in-the-dom
  * 
- * @extends HTMLElement
+ * @param {String} columnName
  */
 class KanbanColumn extends HTMLElement {
     constructor(columnName = 'To Do') {
@@ -111,7 +109,9 @@ class KanbanColumn extends HTMLElement {
     }
 }
 
-
+/**
+ * Represents a button that adds a new KanbanColumn to the DOM
+ */
 class AddKanbanColumn extends HTMLElement {
     constructor() {
         //Calls the parent class's constructor and binds the parent class's public fields, 
@@ -147,17 +147,21 @@ class AddKanbanColumn extends HTMLElement {
 /**
  * The popup that appears when the user clicks on the add card button or an existing card
  * 
- * @extends HTMLElement
+ * @param {?String} columnId
+ * @param {String} name
+ * @param {String} description
+ * @param {String} priority
+ * @param {?String} cardID
  */
 class KanbanCardPopup extends HTMLElement {
-    constructor(id, name = 'New Card', description = 'New Card Description', priority = 'low', cardID = null) {
+    constructor(columnId, name = 'New Card', description = 'New Card Description', priority = 'low', cardID = null) {
         //Calls the parent class's constructor and binds the parent class's public fields, 
         //after which the derived class's constructor can further access and modify 'this'.
         //https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/super
         super();
         this.name = name;
         this.description = description;
-        this.columnId = id;
+        this.columnId = columnId;
         this.priority = priority;
         this.cardID = cardID;
         
@@ -207,7 +211,7 @@ class KanbanCardPopup extends HTMLElement {
     }
 
     /**
-     * Saves the card to the DOM
+     * Saves the card to the DOM either by creating a new card or updating an existing card
      */
     saveCard() {
         //get the values from the form
@@ -215,14 +219,29 @@ class KanbanCardPopup extends HTMLElement {
         this.description = this.shadowRoot.querySelector('[name="kanban-card-description"]').value;
         this.priority = this.shadowRoot.querySelector('[name="kanban-card-priority"]').value;
 
+        //if card does not already exist, create a new card
         if(this.cardID == null) {
             this.cardID = KanbanBoard.generateCardID();
             this.createCard();
         } else {
-            console.log('update card');
+            this.updateCard();
         }
 
         this.closeCardPopup();
+    }
+
+    /**
+     * Locates the card in the DOM and passes the new values to the cards update function
+     */
+    updateCard() {
+        const columns = document.querySelectorAll('kanban-column');
+        columns.forEach(column => {
+            const card = column.shadowRoot.querySelector(`#${this.cardID}`);
+            if(card != null) {
+                card.updateCardContents(this.name, this.description, this.priority);
+                return;
+            }
+        })
     }
 
     /**
@@ -244,6 +263,14 @@ class KanbanCardPopup extends HTMLElement {
     }
 }
 
+/**
+ * A Kanban card that represents a task
+ * 
+ * @param {String} name
+ * @param {String} description
+ * @param {String} priority
+ * @param {String} cardID
+ */
 class KanbanCard extends HTMLElement {
     constructor(name, description, priority, cardID) {
         //Calls the parent class's constructor and binds the parent class's public fields, 
@@ -270,6 +297,14 @@ class KanbanCard extends HTMLElement {
         this.fillCard(shadowRoot);
 
         this.addEditCardEventListener(shadowRoot);
+    }
+
+    updateCardContents(name, description, priority) {
+        this.name = name;
+        this.description = description;
+        this.priority = priority;
+
+        this.fillCard(this.shadowRoot);
     }
 
     /**
