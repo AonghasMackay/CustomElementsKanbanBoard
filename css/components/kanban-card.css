@@ -37,8 +37,7 @@
     margin: 15px;
 }
 
-.card-title:hover,
-.card-description:hover {
+.card-content:hover {
     cursor: pointer;
     filter: brightness(85%);
 }

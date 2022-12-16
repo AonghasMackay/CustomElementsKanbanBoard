@@ -294,13 +294,22 @@ class KanbanCard extends HTMLElement {
             self.remove();
         })
 
-        shadowRoot.querySelector('.card-description').addEventListener('click', function(event) {
-            document.querySelector('body').appendChild(new KanbanCardPopup(null, this.name, this.description, this.priority, this.cardID));
+        shadowRoot.querySelector('.card-content').addEventListener('click', function(event) {
+            self.editCard(event);
         });
+    }
 
-        shadowRoot.querySelector('.card-title').addEventListener('click', function(event) {
-            document.querySelector('body').appendChild(new KanbanCardPopup(null, this.name, this.description, this.priority, this.cardID));
-        });
+    /**
+     * Edits the existing card
+     * 
+     * @param {Event} event
+     */
+    editCard(event) {
+        //check card isn't being deleted
+        if(event.target.classList.contains('card-delete-button')) {
+            return;
+        }
+        document.querySelector('body').appendChild(new KanbanCardPopup(null, this.name, this.description, this.priority, this.cardID));
     }
 }
 
