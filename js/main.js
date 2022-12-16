@@ -97,30 +97,85 @@ class KanbanColumn extends HTMLElement {
 
         const cardContainer = shadowRoot.querySelector('.kanban-card-container');
         cardContainer.addEventListener('dragover', function(event) {
-            event.preventDefault();
-            event.dataTransfer.dropEffect = 'move';
+            kanbanColumn.dragOverHandler(event);
         });
 
         cardContainer.addEventListener('drop', function(event) {
-            dropHandler(event);
+            kanbanColumn.dropHandler(event);
+        });
+
+        cardContainer.addEventListener('dragenter', function(event) {
+            kanbanColumn.dragEnterHandler(event);
+        });
+
+        cardContainer.addEventListener('dragleave', function(event) {
+            kanbanColumn.dragLeaveHandler(event);
         });
     }
 
     /**
      * Handles the drop event
-     * Locates the card based on the card and column ids stored in the dataTransfer object and then appends it to the target element
+     * Deletes the ghost card when we exit the drop target
+     * 
+     * @param {Event} event
+     */
+    dragLeaveHandler(event) {
+        event.preventDefault();
+        const ghostCard = event.target.querySelector('.ghost-card');
+        ghostCard.remove();
+    }
+
+    /**
+     * Handles the dragenter event
+     * Creates a 'ghost' card to show where the card will be dropped
      * 
      * @param {Event} event 
      */
-    dropHandler(event) {
+    dragEnterHandler(event) {
         event.preventDefault();
+        const card = KanbanBoard.createGhostCard();
+
+        event.target.appendChild(card);
+    }
+
+    /**
+     * Returns the dragged card element based on the provided event
+     * 
+     * @param {Event} event 
+     * @returns {Node}
+     */
+    getDraggedCard(event) {
         const cardId = event.dataTransfer.getData('application/card-id');
         const columnId = event.dataTransfer.getData('application/column-id');
 
         const columnCardContainer = document.getElementById(columnId).shadowRoot.querySelector('.kanban-card-container');
         const card = columnCardContainer.querySelector(`#${cardId}`);
+        return card;
+    }
 
-        event.target.appendChild(card);
+    /**
+     * Handles the dragover event
+     * 
+     * @param {Event} event 
+     */
+    dragOverHandler(event) {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+    }
+
+    /**
+     * Handles the drop event
+     * Locates the card based on the card and column ids stored in the dataTransfer object and then replaces the ghost card with the card
+     * 
+     * @param {Event} event 
+     */
+    dropHandler(event) {
+        event.preventDefault();
+        const card = this.getDraggedCard(event);
+
+        const ghostCard = event.target.querySelector('.ghost-card');
+        event.target.insertBefore(card, ghostCard);
+        ghostCard.remove();
     }
 
     /**
@@ -367,6 +422,75 @@ class KanbanCard extends HTMLElement {
         this.addEventListener('dragstart', function(event) {
             this.dragStartHandler(event);
         });
+
+        this.addEventListener('dragenter', function(event) {
+            this.dragEnterHandler(event);
+        });
+
+        this.addEventListener('dragleave', function(event) {
+            this.dragLeaveHandler(event);
+        });
+
+        this.addEventListener('dragover', function(event) {
+            this.dragOverHandler(event);
+        });
+
+        this.addEventListener('drop', function(event) {
+            this.dropHandler(event);
+        });
+    }
+
+    dropHandler(event) {
+        event.preventDefault();
+        const ghostCard = this.parentElement.querySelector('.ghost-card');
+        this.parentElement.insertBefore(this, ghostCard);
+        ghostCard.remove();
+    }
+
+    dragOverHandler(event) {
+        event.preventDefault();
+        const cardHeight = this.getBoundingClientRect().height;
+        const mousePosition = event.offsetY;
+        const ghostCard = this.parentElement.querySelector('.ghost-card');
+        let position = null;
+        
+        if(ghostCard !== null) {
+            position = this.compareDocumentPosition(ghostCard);
+        }
+
+        const newGhostCard = KanbanBoard.createGhostCard();
+
+        if(mousePosition < cardHeight / 2) {
+            if(position === Node.DOCUMENT_POSITION_PRECEDING) {
+                return;
+            } else if(ghostCard !== null) {
+                ghostCard.remove();
+            }
+            this.parentElement.insertBefore(newGhostCard, this);
+        } else {
+            if(position === Node.DOCUMENT_POSITION_FOLLOWING) {
+                return;
+            } else if(ghostCard !== null) {
+                ghostCard.remove();
+            }
+            this.after(newGhostCard);
+        }
+    }
+
+    dragEnterHandler(event) {
+        const ghostCard = this.parentElement.querySelector('.ghost-card');
+        
+        if(ghostCard !== null) {
+            ghostCard.remove();
+        }
+    }
+
+    dragLeaveHandler(event) {
+        const ghostCard = this.parentElement.querySelector('.ghost-card');
+        
+        if(ghostCard !== null) {
+            ghostCard.remove();
+        }
     }
 
     /**
@@ -459,5 +583,17 @@ class KanbanBoard {
         customElements.define('kanban-card', KanbanCard);
         customElements.define('add-kanban-column', AddKanbanColumn);
         customElements.define('kanban-card-popup', KanbanCardPopup);
+    }
+
+    /**
+     * Creates a ghost card to be used as a guideline when dragging cards
+     * 
+     * @returns {KanbanCard}
+     */
+    static createGhostCard() {
+        const card = new KanbanCard('', '', '', null);
+        card.classList.add('ghost-card');
+
+        return card;
     }
 }

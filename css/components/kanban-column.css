@@ -59,3 +59,7 @@ button:hover {
     cursor: pointer;
     filter: brightness(85%);
 }
+
+.ghost-card {
+    filter: contrast(0.1);
+}
