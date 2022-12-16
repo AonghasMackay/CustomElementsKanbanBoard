@@ -4,19 +4,14 @@
  * @author Aonghas MacKay
  * @license GPL-3.0
  * 
- * @todo allow cards to be drag and dropped between columns
  * @todo reduce css repetition
  * @todo make responsive
- * @todo check overfloww works
+ * @todo check overflow works
  */
 
 //when dom has loaded...
 document.addEventListener("DOMContentLoaded", function(event) {
-    customElements.define('kanban-column', KanbanColumn);
-    customElements.define('kanban-card', KanbanCard);
-    customElements.define('add-kanban-column', AddKanbanColumn);
-    customElements.define('kanban-card-popup', KanbanCardPopup);
-
+    KanbanBoard.defineCustomElements();
     new KanbanBoard();
 });
 
@@ -92,8 +87,6 @@ class KanbanColumn extends HTMLElement {
 
         const addKanbanCardButton = shadowRoot.querySelector('.add-kanban-card-button');
         addKanbanCardButton.addEventListener('click', function(event) {
-            //const kanbanCardContainer = shadowRoot.querySelector('.kanban-card-container');
-            //kanbanCardContainer.appendChild(new KanbanCard());
             document.querySelector('body').appendChild(new KanbanCardPopup(kanbanColumn.id));
         });
 
@@ -101,6 +94,33 @@ class KanbanColumn extends HTMLElement {
         columnNameInput.addEventListener('input', function(event) {
             kanbanColumn.name = event.target.value;
         });
+
+        const cardContainer = shadowRoot.querySelector('.kanban-card-container');
+        cardContainer.addEventListener('dragover', function(event) {
+            event.preventDefault();
+            event.dataTransfer.dropEffect = 'move';
+        });
+
+        cardContainer.addEventListener('drop', function(event) {
+            dropHandler(event);
+        });
+    }
+
+    /**
+     * Handles the drop event
+     * Locates the card based on the card and column ids stored in the dataTransfer object and then appends it to the target element
+     * 
+     * @param {Event} event 
+     */
+    dropHandler(event) {
+        event.preventDefault();
+        const cardId = event.dataTransfer.getData('application/card-id');
+        const columnId = event.dataTransfer.getData('application/column-id');
+
+        const columnCardContainer = document.getElementById(columnId).shadowRoot.querySelector('.kanban-card-container');
+        const card = columnCardContainer.querySelector(`#${cardId}`);
+
+        event.target.appendChild(card);
     }
 
     /**
@@ -298,9 +318,18 @@ class KanbanCard extends HTMLElement {
 
         this.fillCard(shadowRoot);
 
-        this.addEditCardEventListeners(shadowRoot);
+        this.setAttribute('draggable', true);
+
+        this.addCardEventListeners(shadowRoot);
     }
 
+    /**
+     * Updates an existing card
+     * 
+     * @param {String} name 
+     * @param {String} description 
+     * @param {String} priority 
+     */
     updateCardContents(name, description, priority) {
         this.name = name;
         this.description = description;
@@ -325,7 +354,7 @@ class KanbanCard extends HTMLElement {
      * 
      * @param {ShadowRoot} shadowRoot 
      */
-    addEditCardEventListeners(shadowRoot) {
+    addCardEventListeners(shadowRoot) {
         const self = this;
         shadowRoot.querySelector('.card-delete-button').addEventListener('click', function(event) {
             self.remove();
@@ -334,6 +363,21 @@ class KanbanCard extends HTMLElement {
         shadowRoot.querySelector('.card-content').addEventListener('click', function(event) {
             self.editCard(event);
         });
+
+        this.addEventListener('dragstart', function(event) {
+            this.dragStartHandler(event);
+        });
+    }
+
+    /**
+     * Sets the transfer data for the drag event
+     * 
+     * @param {Event} event 
+     */
+    dragStartHandler(event) {
+        event.dataTransfer.setData("application/card-id", this.cardID);
+        event.dataTransfer.setData("application/column-id", this.getRootNode().host.id);
+        event.dataTransfer.dropEffect = "move";
     }
 
     /**
@@ -405,5 +449,15 @@ class KanbanBoard {
         });
 
         return `card-${cardLength + 1}`;
+    }
+
+    /**
+     * Defines our custom elements
+     */
+    static defineCustomElements() {
+        customElements.define('kanban-column', KanbanColumn);
+        customElements.define('kanban-card', KanbanCard);
+        customElements.define('add-kanban-column', AddKanbanColumn);
+        customElements.define('kanban-card-popup', KanbanCardPopup);
     }
 }
