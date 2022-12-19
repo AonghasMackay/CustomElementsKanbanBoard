@@ -121,9 +121,14 @@ class KanbanColumn extends HTMLElement {
      */
     dragLeaveHandler(event) {
         event.preventDefault();
-        const ghostCard = event.target.querySelector('.ghost-card');
-        if(ghostCard) {
-            ghostCard.remove();
+        event.stopPropagation();
+
+        //get all ghost cards just in case it creates one on the initial card being dragged
+        const ghostCards = event.target.querySelectorAll('.ghost-card');
+        if(ghostCards) {
+            ghostCards.forEach(ghostCard => {
+                ghostCard.remove();
+            });
         }
     }
 
@@ -135,24 +140,10 @@ class KanbanColumn extends HTMLElement {
      */
     dragEnterHandler(event) {
         event.preventDefault();
+        event.stopPropagation();
         const card = KanbanBoard.createGhostCard();
 
         event.target.appendChild(card);
-    }
-
-    /**
-     * Returns the dragged card element based on the provided event
-     * 
-     * @param {Event} event 
-     * @returns {Node}
-     */
-    getDraggedCard(event) {
-        const cardId = event.dataTransfer.getData('application/card-id');
-        const columnId = event.dataTransfer.getData('application/column-id');
-
-        const columnCardContainer = document.getElementById(columnId).shadowRoot.querySelector('.kanban-card-container');
-        const card = columnCardContainer.querySelector(`#${cardId}`);
-        return card;
     }
 
     /**
@@ -162,6 +153,7 @@ class KanbanColumn extends HTMLElement {
      */
     dragOverHandler(event) {
         event.preventDefault();
+        event.stopPropagation();
         event.dataTransfer.dropEffect = 'move';
     }
 
@@ -173,7 +165,8 @@ class KanbanColumn extends HTMLElement {
      */
     dropHandler(event) {
         event.preventDefault();
-        const card = this.getDraggedCard(event);
+        event.stopPropagation();
+        const card = KanbanBoard.getDraggedCard(event);
         card.hidden = false;
 
         const ghostCard = event.target.querySelector('.ghost-card');
@@ -468,21 +461,40 @@ class KanbanCard extends HTMLElement {
         });
     }
 
+    /**
+     * Handles the drop event
+     * 
+     * @param {Event} event 
+     * @returns  {undefined}
+     */
     dropHandler(event) {
         event.preventDefault();
+        //stop event bubbling up the DOM tree
         event.stopPropagation();
+
+        const card = KanbanBoard.getDraggedCard(event)
         const ghostCard = this.parentElement.querySelector('.ghost-card');
-        this.hidden = false;
+
+        //unhide the dragged card
+        card.hidden = false;
+
+        //if no ghost card exists for some reason then just append the card to the column
         if(ghostCard === null) {
-            this.parentElement.appendChild(this);
+            this.parentElement.appendChild(card);
             return;
         } else {
-            this.parentElement.insertBefore(this, ghostCard);
+            this.parentElement.insertBefore(card, ghostCard);
             ghostCard.remove();
             return;
         }
     }
 
+    /**
+     * Handles the drag over event by positioning a ghost card element relative to the card being dragged over
+     * 
+     * @param {Event} event 
+     * @returns {undefined}
+     */
     dragOverHandler(event) {
         event.preventDefault();
         event.stopPropagation();
@@ -492,18 +504,24 @@ class KanbanCard extends HTMLElement {
             return;
         }
         
+        //get the height of the card being dragged over and the current mouse position
         const cardHeight = this.getBoundingClientRect().height;
         const mousePosition = event.offsetY;
+        //get the ghost card element
         const ghostCard = this.parentElement.querySelector('.ghost-card');
         let position = null;
         
+        //if the ghost card exists, get its position relative to the card being dragged over
         if(ghostCard !== null) {
             position = this.compareDocumentPosition(ghostCard);
         }
 
+        //create a new ghost card
         const newGhostCard = KanbanBoard.createGhostCard();
 
+        //if the mouse is above the middle of the card, insert the ghost card before the card being dragged over
         if(mousePosition < cardHeight / 2) {
+            //if the ghost card is already before the card being dragged over, ignore the event
             if(position === Node.DOCUMENT_POSITION_PRECEDING) {
                 return;
             } else if(ghostCard !== null) {
@@ -511,6 +529,7 @@ class KanbanCard extends HTMLElement {
             }
             this.parentElement.insertBefore(newGhostCard, this);
         } else {
+            //if the ghost card is already after the card being dragged over, ignore the event
             if(position === Node.DOCUMENT_POSITION_FOLLOWING) {
                 return;
             } else if(ghostCard !== null) {
@@ -548,6 +567,7 @@ class KanbanCard extends HTMLElement {
     dragLeaveHandler(event) {
         event.preventDefault();
         event.stopPropagation();
+        /*
 
         //if the card is being dragged over a ghost-card element, ignore the event
         if(event.target.classList.contains('ghost-card')) {
@@ -558,6 +578,7 @@ class KanbanCard extends HTMLElement {
         if(ghostCard !== null) {
             ghostCard.remove();
         }
+        */
     }
 
     /**
@@ -669,6 +690,21 @@ class KanbanBoard {
         card.classList.add('ghost-card');
         card.removeEventListeners();
 
+        return card;
+    }
+    
+    /**
+     * Returns the dragged card element based on the provided event
+     * 
+     * @param {Event} event 
+     * @returns {Node}
+     */
+    static getDraggedCard(event) {
+        const cardId = event.dataTransfer.getData('application/card-id');
+        const columnId = event.dataTransfer.getData('application/column-id');
+
+        const columnCardContainer = document.getElementById(columnId).shadowRoot.querySelector('.kanban-card-container');
+        const card = columnCardContainer.querySelector(`#${cardId}`);
         return card;
     }
 }
