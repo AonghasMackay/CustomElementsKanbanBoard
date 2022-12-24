@@ -1,6 +1,6 @@
 # Custom Elements Kanban Board
 
-Kanban board built using HTML5 Web Components.
+Kanban board built using HTML5 Web Components. Proof of concept for learning web components only.
 
 ## Makes use of:
 + HTML5 Web Components
