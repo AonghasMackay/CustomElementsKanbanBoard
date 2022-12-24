@@ -3,10 +3,6 @@
  * @version 0.3.0
  * @author Aonghas MacKay
  * @license GPL-3.0
- * 
- * @todo reduce css repetition
- * @todo make responsive
- * @todo check overflow works
  */
 
 //when dom has loaded...
@@ -473,20 +469,21 @@ class KanbanCard extends HTMLElement {
         event.stopPropagation();
 
         const card = KanbanBoard.getDraggedCard(event)
-        const ghostCard = this.parentElement.querySelector('.ghost-card');
+        let ghostCard = null;
+        try {
+            ghostCard = this.parentElement.querySelector('.ghost-card');
+        } catch(error) {
+            this.parentElement.appendChild(card);
+            return;
+        }
 
         //unhide the dragged card
         card.hidden = false;
 
         //if no ghost card exists for some reason then just append the card to the column
-        if(ghostCard === null) {
-            this.parentElement.appendChild(card);
-            return;
-        } else {
-            this.parentElement.insertBefore(card, ghostCard);
-            ghostCard.remove();
-            return;
-        }
+        this.parentElement.insertBefore(card, ghostCard);
+        ghostCard.remove();
+        return;
     }
 
     /**
@@ -688,7 +685,7 @@ class KanbanBoard {
     static createGhostCard() {
         const card = new KanbanCard('', '', '', null);
         card.classList.add('ghost-card');
-        card.removeEventListeners();
+        //card.removeEventListeners();
 
         return card;
     }
