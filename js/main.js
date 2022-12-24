@@ -1,6 +1,6 @@
 /**
  * Kanban Board built with Web Components Custom Elements API
- * @version 0.3.0
+ * @version 1.0.0
  * @author Aonghas MacKay
  * @license GPL-3.0
  */
